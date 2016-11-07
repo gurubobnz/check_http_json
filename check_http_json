@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import json, urllib2, argparse, sys
+
+parser = argparse.ArgumentParser(description='Check a URL that returns JSON and emit the message and exit with the given exit code')
+parser.add_argument('url', metavar = 'url', type = str)
+args = parser.parse_args()
+
+try:
+    content = urllib2.urlopen(args.url)
+    response = json.load(content)
+
+    if not response.has_key('exitcode'):
+        raise ValueError('exitcode not found in JSON response')
+
+    if not response.has_key('message'):
+        raise ValueError('message not found in JSON response')
+
+    print response['message']
+    sys.exit(response['exitcode'])
+
+except Exception as err:
+    print 'Error loading', args.url, '-', str(err)
+    sys.exit(2)
