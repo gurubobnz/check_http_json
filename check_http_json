@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import json, urllib2, argparse, sys, base64
+import json, urllib2, argparse, sys, base64, ssl
 
 parser = argparse.ArgumentParser(description='Check a URL that returns JSON and emit the message and exit with the given exit code')
 parser.add_argument('url', metavar = 'url', type = str)
@@ -11,9 +11,9 @@ try:
     request = urllib2.Request(args.url)
     if args.auth:
         base64string = base64.b64encode(args.auth)
-        request.add_header("Authorization", "Basic %s" % base64string)
+    	request.add_header("Authorization", "Basic %s" % base64string)
 
-    content = urllib2.urlopen(request)
+    content = urllib2.urlopen(request, context=ssl._create_unverified_context())
     response = json.load(content)
 
     if not response.has_key('exitcode'):
